@@ -7,7 +7,36 @@ on:
   pull_request:
 
 jobs:
+  check-changes:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    outputs:
+      formula-changes: ${{ steps.check.outputs.formula-changes }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if formula files changed
+        id: check
+        run: |
+          # Get list of changed files
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+          echo "Changed files:"
+          echo "$CHANGED_FILES"
+
+          # Check if any changes are outside .github/workflows/
+          if echo "$CHANGED_FILES" | grep -v '^\.github/workflows/' | grep -q .; then
+            echo "formula-changes=true" >> "$GITHUB_OUTPUT"
+            echo "Formula or other files changed, will run tests"
+          else
+            echo "formula-changes=false" >> "$GITHUB_OUTPUT"
+            echo "Only workflow files changed, skipping formula tests"
+          fi
+
   test-bot:
+    needs: check-changes
+    if: always() && (github.event_name == 'push' || needs.check-changes.outputs.formula-changes == 'true')
     strategy:
       matrix:
         os: [ ubuntu-22.04, macos-15-intel, macos-26 ]
@@ -36,6 +65,7 @@ jobs:
       - run: brew test-bot --only-setup
 
       - run: brew test-bot --only-tap-syntax
+
       - run: brew test-bot --only-formulae
         if: github.event_name == 'pull_request'
 
