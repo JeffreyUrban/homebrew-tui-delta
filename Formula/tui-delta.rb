@@ -7,6 +7,7 @@ class TuiDelta < Formula
   sha256 "689fbb97cf29fe769d647cf8cb93b6880e328285ff3bdf780ebea3ec493beffb"
   license "MIT"
 
+  depends_on "libyaml"
   depends_on "python@3.14"
 
   resource "typer" do
