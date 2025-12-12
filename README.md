@@ -1,6 +1,8 @@
 # Homebrew Tap for tui-delta
 
-This is the official Homebrew tap for [tui-delta](https://github.com/JeffreyUrban/tui-delta), Wraps a TUI (terminal user interface) applicatvel content.
+This is the official Homebrew tap for [tui-delta](https://github.com/JeffreyUrban/tui-delta). 
+
+Run a TUI application (AI assistant sessions, et al) with real-time delta processing for monitoring and logging. Supports Claude Code.
 
 ## Installation
 
